@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "nombre": "Estudiar Programación IV",
+        "descripcion": "Repasar conceptos de MCP",
+        "prioridad": "alta",
+        "completada": false
+    },
+    {
+        "id": 2,
+        "nombre": "Terminar extraclase",
+        "descripcion": "Completar servidor MCP",
+        "prioridad": "media",
+        "completada": false
+    },
+    {
+        "id": 3,
+        "nombre": "Preparar exposición",
+        "descripcion": "Estudiar el funcionamiento del servidor MCP",
+        "prioridad": "alta",
+        "completada": true
+    }
+]
