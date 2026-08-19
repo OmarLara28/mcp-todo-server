@@ -19,5 +19,19 @@
         "descripcion": "Estudiar el funcionamiento del servidor MCP",
         "prioridad": "alta",
         "completada": true
+    },
+    {
+        "id": 4,
+        "nombre": "Estudiar para examen",
+        "descripcion": "Repasar los temas de Programación IV",
+        "prioridad": "alta",
+        "completada": true
+    },
+    {
+        "id": 5,
+        "nombre": "Preparar proyecto",
+        "descripcion": "Revisar documentación del proyecto",
+        "prioridad": "media",
+        "completada": false
     }
 ]

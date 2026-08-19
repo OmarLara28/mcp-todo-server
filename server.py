@@ -4,12 +4,19 @@ from pathlib import Path
 from fastmcp import FastMCP
 
 
-# Crear el servidor MCP
+# =========================================================
+# CREAR SERVIDOR MCP
+# =========================================================
+
 mcp = FastMCP("Servidor de Tareas MCP")
 
 # Ubicación del archivo tasks.json
 TASKS_FILE = Path(__file__).parent / "tasks.json"
 
+
+# =========================================================
+# FUNCIONES AUXILIARES
+# =========================================================
 
 def cargar_tareas():
     """Lee las tareas almacenadas en tasks.json."""
@@ -23,7 +30,12 @@ def cargar_tareas():
 def guardar_tareas(tareas):
     """Guarda las tareas en tasks.json."""
     with open(TASKS_FILE, "w", encoding="utf-8") as archivo:
-        json.dump(tareas, archivo, indent=4, ensure_ascii=False)
+        json.dump(
+            tareas,
+            archivo,
+            indent=4,
+            ensure_ascii=False
+        )
 
 
 # =========================================================
@@ -33,6 +45,7 @@ def guardar_tareas(tareas):
 @mcp.resource("tasks://all")
 def obtener_tareas() -> str:
     """Retorna la lista de tareas almacenadas."""
+
     tareas = cargar_tareas()
 
     return json.dumps(
@@ -65,7 +78,9 @@ def add_task(
     tareas = cargar_tareas()
 
     if tareas:
-        nuevo_id = max(tarea["id"] for tarea in tareas) + 1
+        nuevo_id = max(
+            tarea["id"] for tarea in tareas
+        ) + 1
     else:
         nuevo_id = 1
 
@@ -78,6 +93,7 @@ def add_task(
     }
 
     tareas.append(nueva_tarea)
+
     guardar_tareas(tareas)
 
     return (
@@ -94,17 +110,24 @@ def add_task(
 
 @mcp.tool()
 def complete_task(id: int) -> str:
-    """Marca una tarea como completada utilizando su ID."""
+    """
+    Marca una tarea como completada utilizando su ID.
+    """
 
     tareas = cargar_tareas()
 
     for tarea in tareas:
+
         if tarea["id"] == id:
 
             if tarea["completada"]:
-                return f"La tarea con ID {id} ya estaba completada."
+                return (
+                    f"La tarea con ID {id} "
+                    f"ya estaba completada."
+                )
 
             tarea["completada"] = True
+
             guardar_tareas(tareas)
 
             return (
@@ -121,14 +144,18 @@ def complete_task(id: int) -> str:
 
 @mcp.prompt()
 def daily_summary() -> str:
-    """Genera una plantilla con el estado actual de las tareas."""
+    """
+    Genera una plantilla con el estado actual
+    de las tareas.
+    """
 
     tareas = cargar_tareas()
 
     total = len(tareas)
 
     completadas = sum(
-        1 for tarea in tareas
+        1
+        for tarea in tareas
         if tarea["completada"]
     )
 
@@ -147,7 +174,9 @@ def daily_summary() -> str:
     )
 
     if not texto_pendientes:
-        texto_pendientes = "No existen tareas pendientes."
+        texto_pendientes = (
+            "No existen tareas pendientes."
+        )
 
     return f"""
 Genera un resumen diario del estado actual de las tareas.
@@ -160,6 +189,58 @@ Tareas pendientes:
 {texto_pendientes}
 
 Presenta el resumen de forma clara, breve y ordenada.
+"""
+
+
+# =========================================================
+# TOOL 3: GENERAR RESUMEN DIARIO
+# =========================================================
+
+@mcp.tool()
+def get_daily_summary() -> str:
+    """
+    Genera un resumen diario del estado actual
+    de las tareas.
+    """
+
+    tareas = cargar_tareas()
+
+    total = len(tareas)
+
+    completadas = sum(
+        1
+        for tarea in tareas
+        if tarea["completada"]
+    )
+
+    pendientes = total - completadas
+
+    tareas_pendientes = [
+        tarea
+        for tarea in tareas
+        if not tarea["completada"]
+    ]
+
+    texto_pendientes = "\n".join(
+        f"- {tarea['nombre']} "
+        f"(Prioridad: {tarea['prioridad']})"
+        for tarea in tareas_pendientes
+    )
+
+    if not texto_pendientes:
+        texto_pendientes = (
+            "No existen tareas pendientes."
+        )
+
+    return f"""
+Resumen diario de tareas
+
+Total de tareas: {total}
+Tareas completadas: {completadas}
+Tareas pendientes: {pendientes}
+
+Tareas pendientes:
+{texto_pendientes}
 """
 
 
